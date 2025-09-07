@@ -4,6 +4,19 @@ import { ITask } from "../models/task.types";
 
 const router = Router()
 
+// get one task
+router.get("/:id", async (req,res) => {
+    try {
+        const { id } = req.params
+        const task = await Task.findById(id)
+        if(!task){
+            return res.status(404).json({ message: "Task not found" })
+        }   
+        res.status(200).json(task)
+    } catch (error) {
+        res.status(500).json(error)
+    }  
+})
 
 // get all tasks
 router.get("/getAll", async (req,res) => {
