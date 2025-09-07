@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import userRoutes from './routes/user.routes';
+import taskRoutes from './routes/task.routes';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
@@ -12,6 +13,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api', userRoutes);
+app.use('/api/tasks', taskRoutes)
 
 const mongoUrl = process.env.MONGO_URL as string;
 
