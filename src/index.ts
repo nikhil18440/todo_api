@@ -45,10 +45,16 @@ app.post("/auth", (req: Request, res: Response) => {
   }
 
   const user = { name: username };
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" });
+  const accessToken = generateAccessToken(user)
 
   res.json({ accessToken });
 });
+
+
+function generateAccessToken(user:any) {
+  return jwt.sign(user,process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: '10s'})
+}
+
 
 // ---------- Middleware ----------
 function authenticate(req: AuthRequest, res: Response, next: NextFunction): void {
