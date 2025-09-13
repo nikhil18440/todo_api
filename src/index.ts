@@ -37,6 +37,9 @@ app.get('/posts', authenticate, (req: AuthRequest, res: Response) => {
   res.send(posts.filter((post) => post.username === req.user?.username));
 });
 
+
+app.use("/api/tasks", taskRoutes)
+
 // Login/auth route (no middleware here)
 app.post("/auth", (req: Request, res: Response) => {
   const { username } = req.body;

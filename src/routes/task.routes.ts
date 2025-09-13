@@ -4,8 +4,35 @@ import { ITask } from "../models/task.types";
 
 const router = Router()
 
+// get all tasks
+router.get("/getAll", async (req,res) => {
+    try {
+        const tasks = await Task.find()
+        res.status(200).json(tasks)
+    } catch (error) {
+        res.status(200).json(error)
+    }
+})
+
+
+// get completed
+router.get("/completed", async (req,res) => {
+    try {
+        const tasks = await Task.aggregate([
+            {
+                $match: {completed: false}
+            }
+        ])
+        res.status(200).json(tasks)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+})
+
+
+
 // get one task
-router.get("/:id", async (req,res) => {
+router.get("getTask/:id", async (req,res) => {
     try {
         const { id } = req.params
         const task = await Task.findById(id)
@@ -18,15 +45,6 @@ router.get("/:id", async (req,res) => {
     }  
 })
 
-// get all tasks
-router.get("/getAll", async (req,res) => {
-    try {
-        const tasks = await Task.find()
-        res.status(200).json(tasks)
-    } catch (error) {
-        res.status(200).json(error)
-    }
-})
 
 // create a task
 router.post("/create", async (req,res) => {
@@ -67,6 +85,16 @@ router.delete("/:id", async (req,res) => {
     } catch (error) {
         res.status(500).json(error)
     }   
+})
+
+
+router.delete("/", async (req,res) => {
+    try {
+        await Task.deleteMany()
+        res.status(200).json("deleted succesfully")
+    } catch (error) {
+        res.status(404).json(error)
+    }
 })
 
 export default router
