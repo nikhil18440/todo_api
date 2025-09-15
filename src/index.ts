@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import userRoutes from './routes/user.routes';
 import taskRoutes from './routes/task.routes';
+import taskSQLroutes from './routes/taskSQL.routes'
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -39,6 +40,7 @@ app.get('/posts', authenticate, (req: AuthRequest, res: Response) => {
 
 
 app.use("/api/tasks", taskRoutes)
+app.use("/api/sql/tasks", taskSQLroutes)
 
 // Login/auth route (no middleware here)
 app.post("/auth", (req: Request, res: Response) => {
