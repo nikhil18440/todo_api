@@ -34,51 +34,52 @@ app.get('/', (req: Request, res: Response) => {
   res.send(posts);
 });
 
-app.get('/posts', authenticate, (req: AuthRequest, res: Response) => {
-  res.send(posts.filter((post) => post.username === req.user?.username));
-});
+// app.get('/posts', authenticate, (req: AuthRequest, res: Response) => {
+//   res.send(posts.filter((post) => post.username === req.user?.username));
+// });
+
 
 
 app.use("/api/tasks", taskRoutes)
 app.use("/api/sql/tasks", taskSQLroutes)
 
-// Login/auth route (no middleware here)
-app.post("/auth", (req: Request, res: Response) => {
-  const { username } = req.body;
-  if (!username) {
-    return res.status(400).json({ error: "Username required" });
-  }
+// // Login/auth route (no middleware here)
+// app.post("/auth", (req: Request, res: Response) => {
+//   const { username } = req.body;
+//   if (!username) {
+//     return res.status(400).json({ error: "Username required" });
+//   }
 
-  const user = { name: username };
-  const accessToken = generateAccessToken(user)
+//   const user = { name: username };
+//   const accessToken = generateAccessToken(user)
 
-  res.json({ accessToken });
-});
-
-
-function generateAccessToken(user:any) {
-  return jwt.sign(user,process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: '10s'})
-}
+//   res.json({ accessToken });
+// });
 
 
-// ---------- Middleware ----------
-function authenticate(req: AuthRequest, res: Response, next: NextFunction): void {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+// function generateAccessToken(user:any) {
+//   return jwt.sign(user,process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: '10s'})
+// }
 
-  if (!token) {
-    res.sendStatus(401); // Unauthorized
-    return;
-  }
 
-  try {
-    const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as JwtUserPayload;
-    req.user = user;
-    next();
-  } catch (err) {
-    res.sendStatus(403); // Forbidden
-  }
-}
+// // ---------- Middleware ----------
+// function authenticate(req: AuthRequest, res: Response, next: NextFunction): void {
+//   const authHeader = req.headers['authorization'];
+//   const token = authHeader && authHeader.split(' ')[1];
+
+//   if (!token) {
+//     res.sendStatus(401); // Unauthorized
+//     return;
+//   }
+
+//   try {
+//     const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as JwtUserPayload;
+//     req.user = user;
+//     next();
+//   } catch (err) {
+//     res.sendStatus(403); // Forbidden
+//   }
+// }
 
 // ---------- MongoDB ----------
 const mongoUrl = process.env.MONGO_URL as string;
