@@ -1,6 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
+
 import userRoutes from './routes/user.routes';
 import taskRoutes from './routes/task.routes';
+import authRoutes from  './routes/auth.routes'
+
 import taskSQLroutes from './routes/taskSQL.routes'
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -42,6 +45,10 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use("/api/tasks", taskRoutes)
 app.use("/api/sql/tasks", taskSQLroutes)
+
+app.use("/api/users", userRoutes)
+
+app.use("/api/auth", authRoutes)
 
 // // Login/auth route (no middleware here)
 // app.post("/auth", (req: Request, res: Response) => {
@@ -88,8 +95,7 @@ mongoose.connect(mongoUrl)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-app.use('/api/users', userRoutes);
-app.use('/api/tasks', taskRoutes);
+
 
 // ---------- Start Server ----------
 app.listen(3000, () => {

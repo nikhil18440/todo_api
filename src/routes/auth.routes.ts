@@ -1,5 +1,6 @@
 import { Express ,Router} from "express";
 import { User } from "../models/userModel";
+import {generateAccessToken} from "../config/authServer"
 
 const router = Router()
 
@@ -29,9 +30,14 @@ router.post("/login", async (req,res) => {
         if (user) {
 
             const password = req.body.password
+            // res.send(user)
             if (password === user.password) {
-                
+                console.log(1)
+                const id = user._id.toString()
+                const accessToken = generateAccessToken(id)
+                res.send(200).json(accessToken)
             }else{
+                console.log(2)
                 res.status(401).json("forbidden")
             }
             
