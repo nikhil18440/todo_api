@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Task } from "../models/taskModel";
 import { ITask } from "../models/task.types";
+import { authenticateUser } from "../config/authServer";
 
 const router = Router()
 
@@ -47,7 +48,7 @@ router.get("getTask/:id", async (req,res) => {
 
 
 // create a task
-router.post("/create", async (req,res) => {
+router.post("/create", authenticateUser, async (req,res) => {
     try {
         const newTask:ITask = req.body
         
@@ -60,7 +61,7 @@ router.post("/create", async (req,res) => {
 
 
 // update a task
-router.put("/:id", async (req,res) => {
+router.put("/:id",authenticateUser, async (req,res) => {
     try {
         const { id } = req.params
         const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true })

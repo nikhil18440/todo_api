@@ -24,18 +24,20 @@ router.post("/login", async (req,res) => {
     try {
         
         const userEmail = req.body.email
-
         const user = await User.findOne({"email": userEmail})
 
         if (user) {
-
             const password = req.body.password
-            // res.send(user)
             if (password === user.password) {
-                console.log(1)
+      
                 const id = user._id.toString()
-                const accessToken = generateAccessToken(id)
-                res.send(200).json(accessToken)
+                const newUser = {
+                    id: user._id,
+                    email: user.email
+                }
+                const accessToken = generateAccessToken(newUser)
+           
+                res.status(200).json(accessToken)
             }else{
                 console.log(2)
                 res.status(401).json("forbidden")
