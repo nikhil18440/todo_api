@@ -16,14 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// ---------- Interfaces ----------
-interface JwtUserPayload extends JwtPayload {
-  username: string;
-}
 
-interface AuthRequest extends Request {
-  user?: JwtUserPayload;
-}
 
 // ---------- Dummy posts ----------
 const posts = [

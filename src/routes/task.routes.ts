@@ -1,30 +1,43 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { Task } from "../models/taskModel";
 import { ITask } from "../models/task.types";
-import { authenticateUser } from "../config/authServer";
+import { authenticateUser, checkUser } from "../config/authServer";
+import { AuthRequest } from "../config/type";
 
 const router = Router()
 
-// get all tasks
-router.get("/getAll", async (req,res) => {
+
+
+// get a single users task
+router.get("/user/:userId",authenticateUser, async (req:AuthRequest,res:Response) => {
     try {
-        const tasks = await Task.find()
-        res.status(200).json(tasks)
+
+        if (checkUser(req)) {
+            const tasks = await Task.aggregate([
+                { $match: { userId: req.params.userId } }
+            ])
+            res.status(200).json(tasks)
+        }else{
+            res.status(401).json("forbidden")
+        }
     } catch (error) {
-        res.status(200).json(error)
+        res.status(500).json(error)
     }
 })
 
-
 // get completed
-router.get("/completed", async (req,res) => {
+router.get("/completed/:userId", async (req,res) => {
     try {
-        const tasks = await Task.aggregate([
-            {
-                $match: {completed: false}
-            }
-        ])
-        res.status(200).json(tasks)
+        if(checkUser(req)){
+            const tasks = await Task.aggregate([
+                {
+                    $match: {completed: false}
+                }
+            ])
+            res.status(200).json(tasks)
+        }else{
+            res.status(401).json("forbidden")
+        }
     } catch (error) {
         res.status(400).json(error)
     }
@@ -48,12 +61,15 @@ router.get("getTask/:id", async (req,res) => {
 
 
 // create a task
-router.post("/create", authenticateUser, async (req,res) => {
+router.post("/create/:userId", authenticateUser, async (req,res) => {
     try {
-        const newTask:ITask = req.body
-        
-        const task = await Task.create(newTask)
-        res.status(201).json(task)
+        if (checkUser(req)) {
+            const newTask:ITask = req.body
+            const task = await Task.create(newTask)
+            res.status(201).json(task)
+        }else{
+            res.status(401).json("forbidden")
+        }
     } catch (error) {
         res.status(500).json(error)
     }   
@@ -61,14 +77,18 @@ router.post("/create", authenticateUser, async (req,res) => {
 
 
 // update a task
-router.put("/:id",authenticateUser, async (req,res) => {
+router.put("/:userId",authenticateUser, async (req,res) => {
     try {
-        const { id } = req.params
-        const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true })
-        if(!updatedTask){
-            return res.status(404).json({ message: "Task not found" })
+        if (checkUser(req)) {
+            const id = req.query.id
+            const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true })
+            if(!updatedTask){
+                return res.status(404).json({ message: "Task not found" })
+            }
+            res.status(200).json(updatedTask)
+        }else{
+            res.status(401).json("forbidden")
         }
-        res.status(200).json(updatedTask)
     } catch (error) {
         res.status(500).json(error)
     }   

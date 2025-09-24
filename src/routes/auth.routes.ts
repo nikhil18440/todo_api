@@ -30,14 +30,13 @@ router.post("/login", async (req,res) => {
             const password = req.body.password
             if (password === user.password) {
       
-                const id = user._id.toString()
                 const newUser = {
                     id: user._id,
                     email: user.email
                 }
                 const accessToken = generateAccessToken(newUser)
            
-                res.status(200).json(accessToken)
+                res.status(200).json([accessToken,user])
             }else{
                 console.log(2)
                 res.status(401).json("forbidden")

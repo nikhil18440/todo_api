@@ -1,14 +1,15 @@
 import { NextFunction, Request,Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { AuthRequest, JwtUserPayload } from "./type";
 
-// ---------- Interfaces ----------
-interface JwtUserPayload extends JwtPayload {
-  username: string;
-}
+// // ---------- Interfaces ----------
+// interface JwtUserPayload extends JwtPayload {
+//   username: string;
+// }
 
-interface AuthRequest extends Request {
-  user?: JwtUserPayload;
-}
+// interface AuthRequest extends Request {
+//   user?: JwtUserPayload;
+// }
 
 
 export const generateAccessToken = (user:object): string => {
@@ -40,8 +41,11 @@ export const authenticateUser = (req:AuthRequest,res:Response,next:NextFunction)
 }
 
 
-export const checkUser = (userId:string, loggedUser:string):boolean => {
-    if(userId === loggedUser){
+export const checkUser = (req:AuthRequest):boolean => {
+    const userId = req.params.userId
+    const loggedUserId = req.user?.id
+
+    if(userId === loggedUserId){
         return true
     }else{
         return false
