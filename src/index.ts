@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import session from 'express-session';
 
 import userRoutes from './routes/user.routes';
 import taskRoutes from './routes/task.routes';
@@ -80,6 +81,50 @@ app.use("/api/auth", authRoutes)
 //     res.sendStatus(403); // Forbidden
 //   }
 // }
+
+
+
+// tetsing passport and oauth2
+import './config/gauth';
+import passport from "passport";
+
+
+app.use(session({secret:'cats'}))
+app.use(passport.initialize())
+app.use(passport.session())
+
+function isLoggedIn(req:any,res:any,next:any) {
+  req.user? next() : res.sendStatus(401)
+}
+
+app.get('/oauth', (req,res) => {
+  res.send('<a href="/auth/google"> Authenticate with google </a>')
+})
+
+app.get('/auth/google',
+  passport.authenticate('google', {scope: ['email']})
+)
+
+app.get('/google/callback', passport.authenticate('google', {
+  successRedirect: '/protected',
+  failureRedirect: '/auth/failure'
+}))
+
+app.get('/auth/failure', (req,res) => {
+  res.send("something went wrong")
+})
+
+app.get("/protected", isLoggedIn,(req,res) => {
+  res.send('/Hello')
+})
+
+
+
+
+
+
+
+
 
 // ---------- MongoDB ----------
 const mongoUrl = process.env.MONGO_URL as string;
