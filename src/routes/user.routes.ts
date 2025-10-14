@@ -3,6 +3,12 @@ import { User } from '../models/userModel';
 
 const router = Router();
 
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Promise Rejection:', reason);
+});
+
+
 // router.get('/users', async (req, res) => {
 //     try {
 //         const user = await User.findOne(); // Replace with actual user fetching logic
